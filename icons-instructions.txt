@@ -1,0 +1,7 @@
+Use estes links para gerar ou baixar ícones placeholder e o favicon:
+
+- icon-192.png: https://placehold.co/192x192/25D366/white?text=%F0%9F%8F%A8
+- icon-512.png: https://placehold.co/512x512/25D366/white?text=%F0%9F%8F%A8
+- favicon.ico: https://favicon.io/favicon-generator/ (ou use qualquer gerador de favicon)
+
+Baixe os arquivos e faça upload na raiz do repositório (icon-192.png, icon-512.png, favicon.ico).

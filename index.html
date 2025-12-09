@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pousada Dashboard</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#25D366" />
+    <style>
+        :root {
+            --primary: #25D366;
+            --danger: #d32f2f;
+            --warning: #ff9800;
+            --success: #4caf50;
+            --dark: #333;
+            --light: #f4f4f9;
+            --gray: #ccc;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 120px;
+        }
+        label {
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--gray);
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+        button {
+            padding: 12px 16px;
+            margin: 10px 5px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #128C7E;
+        }
+        button.secondary {
+            background: #6c757d;
+        }
+        .container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: var(--dark);
+            font-size: 1.2em;
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 8px;
+        }
+        .detalhe-ocupado {
+            display: none;
+            margin-top: 8px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+        .destaque-saida {
+            background: #ffebee;
+            border-left: 4px solid var(--danger);
+            padding: 6px 10px;
+            margin: 5px 0;
+        }
+        .footer-btns {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .alert {
+            padding: 10px;
+            background: var(--warning);
+            color: white;
+            border-radius: 6px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🏨 Dashboard Pousada</h1>
+        <p>Controle Diário de Apartamentos & Caixa</p>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Data</label>
+            <input type="date" id="data" value="2025-12-09">
+        </div>
+        <div class="form-group">
+            <label>Relator</label>
+            <input type="text" id="relator" placeholder="Ex: Akiles" value="Akiles">
+        </div>
+        <div class="form-group">
+            <label>Ocupação</label>
+            <input type="text" id="ocupacao" readonly placeholder="Auto">
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Status dos Aptos -->
+        <div class="section">
+            <h2>🛏️ Apartamentos</h2>
+            <ul id="aptos-list"></ul>
+        </div>
+
+        <!-- Financeiro -->
+        <div class="section">
+            <h2>💰 Resumo Financeiro</h2>
+            <label>Receitas Totais <input type="text" id="receitas" placeholder="R$ 0,00"></label>
+            <label>Pix <input type="text" id="pix" placeholder="R$ 0,00"></label>
+            <label>Espécie <input type="text" id="especie" placeholder="R$ 0,00"></label>
+            <label>Despesas <input type="text" id="despesas" placeholder="R$ 0,00"></label>
+            <label>Lucro Líquido <input type="text" id="lucro" placeholder="R$ 0,00"></label>
+            <label>Café da Manhã <input type="text" id="cafe" placeholder="0 pessoas"></label>
+        </div>
+
+        <!-- Observações -->
+        <div class="section">
+            <h2>📝 Observações</h2>
+            <textarea id="observacoes" rows="4" placeholder="Ex: Realocação, manutenção..."></textarea>
+            <label>Entradas Hoje <input type="text" id="entradas" placeholder="Aptos separados por vírgula"></label>
+            <label>Saídas Hoje <input type="text" id="saidasHoje" readonly placeholder="Auto"></label>
+            <div id="listaSaidasDetalhada"></div>
+        </div>
+    </div>
+
+    <div class="footer-btns">
+        <button onclick="salvarLocal()">💾 Salvar Local</button>
+        <button onclick="enviarWhatsApp()" style="background:#25D366">💬 Enviar WhatsApp</button>
+        <button onclick="gerarPDF()" style="background:#007bff">🖨️ Gerar PDF</button>
+        <button onclick="carregarUltimo()" class="secondary">🔄 Carregar Último</button>
+    </div>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        const totalAptos = 18;
+
+        function gerarListaAptos() {
+            const aptosList = document.getElementById('aptos-list');
+            aptosList.innerHTML = '';
+            for (let i = 1; i <= totalAptos; i++) {
+                const item = document.createElement('li');
+                const aptoStr = String(i).padStart(2, '0');
+
+                item.innerHTML = `
+                    Apto ${aptoStr}: 
+                    <select class="apto-status" data-apto="${i}" onchange="mostrarCampos(this)">
+                        <option value="">Selecione</option>
+                        <option value="Ocupado">Ocupado</option>
+                        <option value="Limpo">Limpo</option>
+                        <option value="Sujo">Sujo</option>
+                        <option value="Bloqueado">Bloqueado</option>
+                        <option value="Aguardando Pgto">Aguardando Pgto</option>
+                    </select>
+                    <div class="detalhe-ocupado" id="detalhe-${i}">
+                        <input type="number" step="0.01" placeholder="Valor (R$)" class="valor-diaria" data-apto="${i}">
+                        <select class="forma-pagamento" data-apto="${i}">
+                            <option value="">Forma</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Booking">Booking</option>
+                            <option value="Cartão">Cartão</option>
+                        </select>
+                        <input type="date" class="data-saida" data-apto="${i}" onchange="atualizarSaidas()">
+                    </div>
+                `;
+                aptosList.appendChild(item);
+            }
+            carregarUltimo();
+            setTimeout(atualizarSaidas, 500);
+        }
+
+        function mostrarCampos(select) {
+            const apto = select.dataset.apto;
+            const detalhe = document.getElementById(`detalhe-${apto}`);
+            detalhe.style.display = select.value === 'Ocupado' ? 'block' : 'none';
+            atualizarOcupacao();
+        }
+
+        function atualizarOcupacao() {
+            const status = Array.from(document.querySelectorAll('.apto-status')).map(s => s.value);
+            const ocupados = status.filter(s => s === 'Ocupado').length;
+            const perc = ((ocupados / totalAptos) * 100).toFixed(0);
+            document.getElementById('ocupacao').value = `${ocupados}/${totalAptos} (${perc}%)`;
+        }
+
+        function atualizarSaidas() {
+            const dataAtual = document.getElementById('data').value;
+            const saidas = [];
+            const detalhes = [];
+
+            document.querySelectorAll('.data-saida').forEach(input => {
+                if (input.value === dataAtual) {
+                    const apto = input.dataset.apto.padStart(2, '0');
+                    const valor = document.querySelector(`.valor-diaria[data-apto="${input.dataset.apto}"]`).value || '??';
+                    const forma = document.querySelector(`.forma-pagamento[data-apto="${input.dataset.apto}"]`).value || 'N/A';
+                    saidas.push(apto);
+                    detalhes.push(`Apto ${apto}: R$${valor}, ${forma}`);
+                }
+            });
+
+            document.getElementById('saidasHoje').value = saidas.length ? saidas.join(', ') : 'Nenhuma';
+
+            const container = document.getElementById('listaSaidasDetalhada');
+            container.innerHTML = '';
+            if (detalhes.length > 0) {
+                const p = document.createElement('p');
+                p.innerHTML = '<strong style="color:red">⚠️ Saídas hoje:</strong>';
+                container.appendChild(p);
+                detalhes.forEach(d => {
+                    const div = document.createElement('div');
+                    div.textContent = d;
+                    div.className = 'destaque-saida';
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function coletarDados() {
+            const data = document.getElementById('data').value;
+            const relator = document.getElementById('relator').value || 'Não informado';
+            const ocupacao = document.getElementById('ocupacao').value;
+            const receitas = document.getElementById('receitas').value || 'R$ 0,00';
+            const pix = document.getElementById('pix').value || 'R$ 0,00';
+            const especie = document.getElementById('especie').value || 'R$ 0,00';
+            const despesas = document.getElementById('despesas').value || 'R$ 0,00';
+            const lucro = document.getElementById('lucro').value || 'R$ 0,00';
+            const cafe = document.getElementById('cafe').value || '0 pessoas';
+            const observacoes = document.getElementById('observacoes').value.trim() || 'Nenhuma.';
+            const entradas = document.getElementById('entradas').value || 'Nenhuma';
+
+            const aptos = {};
+            const pagamentos = {};
+
+            document.querySelectorAll('.apto-status').forEach(select => {
+                const apto = String(select.dataset.apto).padStart(2, '0');
+                const status = select.value;
+                if (status === 'Ocupado') {
+                    const valor = document.querySelector(`.valor-diaria[data-apto="${select.dataset.apto}"]`).value || '';
+                    const forma = document.querySelector(`.forma-pagamento[data-apto="${select.dataset.apto}"]`).value || '';
+                    const saida = document.querySelector(`.data-saida[data-apto="${select.dataset.apto}"]`).value || '';
+                    aptos[apto] = `Ocupado (R$${valor} via ${forma})`;
+                    pagamentos[apto] = { valor, forma, saida };
+                } else {
+                    aptos[apto] = status;
+                }
+            });
+
+            return { data, relator, ocupacao, receitas, pix, especie, despesas, lucro, cafe, observacoes, entradas, aptos, pagamentos };
+        }
+
+        function salvarLocal() {
+            const dados = coletarDados();
+            const key = `relatorio_${dados.data}`;
+            localStorage.setItem(key, JSON.stringify(dados));
+            alert(`✅ Relatório salvo para ${formatarData(dados.data)}!`);
+        }
+
+        function carregarUltimo() {
+            const data = document.getElementById('data').value;
+            const key = `relatorio_${data}`;
+            const saved = localStorage.getItem(key);
+            if (saved) {
+                const dados = JSON.parse(saved);
+                Object.keys(dados).forEach(k => {
+                    const el = document.getElementById(k);
+                    if (el) el.value = dados[k];
+                });
+                // Recarregar status dos aptos
+                Object.keys(dados.aptos).forEach(apto => {
+                    const num = parseInt(apto);
+                    const statusEl = document.querySelector(`.apto-status[data-apto="${num}"]`);
+                    if (statusEl) {
+                        statusEl.value = dados.aptos[apto].includes('Ocupado') ? 'Ocupado' : dados.aptos[apto];
+                        if (statusEl.value === 'Ocupado') {
+                            document.getElementById(`detalhe-${num}`).style.display = 'block';
+                            const pag = dados.pagamentos[apto];
+                            if (pag) {
+                                document.querySelector(`.valor-diaria[data-apto="${num}"]`).value = pag.valor;
+                                document.querySelector(`.forma-pagamento[data-apto="${num}"]`).value = pag.forma;
+                                document.querySelector(`.data-saida[data-apto="${num}"]`).value = pag.saida;
+                            }
+                        }
+                    }
+                });
+                atualizarOcupacao();
+                atualizarSaidas();
+                alert(`🔁 Dados de ${formatarData(data)} carregados!`);
+            }
+        }
+
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let y = 15;
+            const dados = coletarDados();
+
+            doc.setFontSize(16); doc.text("📌 Relatório Diário", 105, y, { align: 'center' }); y += 10;
+            doc.setFontSize(12);
+            doc.text(`📅 Data: ${formatarData(dados.data)}`, 10, y); y += 8;
+            doc.text(`👤 Relator: ${dados.relator}`, 10, y); y += 8;
+            doc.text(`🛏️ Ocupação: ${dados.ocupacao}`, 10, y); y += 10;
+
+            doc.setFontSize(14); doc.text("🏨 Status dos Apartamentos", 10, y); y += 6;
+            doc.setFontSize(10);
+            Object.keys(dados.aptos).sort().forEach(apto => {
+                doc.text(`• Apto ${apto}: ${dados.aptos[apto]}`, 10, y); y += 5;
+                if (y > 270) { doc.addPage(); y = 20; }
+            }); y += 10;
+
+            doc.setFontSize(14); doc.text("💰 Financeiro", 10, y); y += 6;
+            ['receitas','pix','especie','despesas','lucro','cafe'].forEach(f => {
+                doc.text(`${f.replace('cafe','Café')}: ${dados[f]}`, 10, y); y += 5;
+            }); y += 5;
+
+            doc.setFontSize(14); doc.text("📝 Observações", 10, y); y += 6;
+            doc.setFontSize(10);
+            doc.splitTextToSize(dados.observacoes, 180).forEach(line => {
+                doc.text(line, 10, y); y += 5;
+            }); y += 10;
+
+            doc.text(`➡️ Entradas: ${dados.entradas}`, 10, y); y += 5;
+            doc.text(`⬅️ Saídas Hoje: ${document.getElementById('saidasHoje').value}`, 10, y);
+
+            doc.save(`relatorio_${dados.data}.pdf`);
+        }
+
+        function enviarWhatsApp() {
+            const dados = coletarDados();
+            const saidas = Object.entries(dados.pagamentos)
+                .filter(([_, info]) => info.saida === dados.data)
+                .map(([apto, info]) => `Apto ${apto} (R$${info.valor})`);
+
+            const msg = encodeURIComponent(`
+📌 *RELATÓRIO DIÁRIO* 📌
+
+📅 *Data:* ${formatarData(dados.data)}
+👤 *Relator:* ${dados.relator}
+🛏️ *Ocupação:* ${dados.ocupacao}
+
+🏨 *Status:*
+${Object.entries(dados.aptos).map(([n,s])=>`• Apto ${n}: ${s}`).join('\n')}
+
+💰 *Financeiro:*
+Receitas: ${dados.receitas}
+Pix: ${dados.pix}
+Espécie: ${dados.especie}
+Lucro: ${dados.lucro}
+
+➡️ *Entradas:* ${dados.entradas}
+⬅️ *Saídas Hoje:* ${saidas.length ? saidas.join(', ') : 'Nenhuma'}
+
+📝 *Observações:*
+${dados.observacoes}
+
+Gerado pelo Dashboard da Pousada.
+            `);
+
+            const numero = "5584987192094"; // atualizado para o número fornecido (sem +)
+            window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
+        }
+
+        function formatarData(dateStr) {
+            return dateStr.split('-').reverse().join('/');
+        }
+
+        // Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(() => {
+                    console.log('SW registrado');
+                });
+            });
+        }
+
+        window.onload = gerarListaAptos;
+    </script>
+</body>
+</html>
