@@ -1,0 +1,270 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Caixa Diário - Pousada</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; justify-content: space-between; }
+        .section { width: 30%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+        .left { background: #f0f8ff; } /* Lista de aptos */
+        .center { background: #fffacd; } /* Financeiro */
+        .right { background: #ffe4e1; } /* Observações */
+        h2 { text-align: center; }
+        input, textarea, select { width: 100%; margin-bottom: 5px; }
+        button { margin-top: 20px; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+    <!-- Biblioteca jsPDF para gerar PDF (CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>Dashboard Caixa Diário</h1>
+    <label>Data Selecionada: <input type="date" id="data" value="2025-12-07"></label>
+    <label>Relator: <input type="text" id="relator" placeholder="Ex: Akiles"></label>
+    <div class="container">
+        <!-- Esquerda: Status dos Apartamentos -->
+        <div class="section left">
+            <h2>Status dos Apartamentos</h2>
+            <p>Ocupação Geral: <input type="text" id="ocupacao" placeholder="Ex: 0/18 (0%)"></p>
+            <ul id="aptos-list">
+                <li>Apto 01: <select class="apto-status" data-apto="01"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="01" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 02: <select class="apto-status" data-apto="02"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="02" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 03: <select class="apto-status" data-apto="03"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="03" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 04: <select class="apto-status" data-apto="04"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="04" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 05: <select class="apto-status" data-apto="05"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="05" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 06: <select class="apto-status" data-apto="06"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="06" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 07: <select class="apto-status" data-apto="07"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="07" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 08: <select class="apto-status" data-apto="08"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="08" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 09: <select class="apto-status" data-apto="09"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="09" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 10: <select class="apto-status" data-apto="10"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="10" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 11: <select class="apto-status" data-apto="11"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="11" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 12: <select class="apto-status" data-apto="12"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="12" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 13: <select class="apto-status" data-apto="13"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="13" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 14: <select class="apto-status" data-apto="14"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="14" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 15: <select class="apto-status" data-apto="15"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="15" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 16: <select class="apto-status" data-apto="16"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="16" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 17: <select class="apto-status" data-apto="17"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="17" placeholder="Detalhes/Pagamento"></li>
+                <li>Apto 18: <select class="apto-status" data-apto="18"><option value="">Selecione</option><option value="Ocupado">Ocupado</option><option value="Vazio">Vazio</option></select> - Detalhes: <input type="text" class="apto-detalhes" data-apto="18" placeholder="Detalhes/Pagamento"></li>
+            </ul>
+        </div>
+        <!-- Centro: Resumo Financeiro -->
+        <div class="section center">
+            <h2>Resumo Financeiro</h2>
+            <p>Receitas Totais: <input type="text" id="receitas" placeholder="Ex: R$0,00"></p>
+            <p>Pix: <input type="text" id="pix" placeholder="Ex: R$0,00"></p>
+            <p>Espécie: <input type="text" id="especie" placeholder="Ex: R$0,00"></p>
+            <p>Despesas: <input type="text" id="despesas" placeholder="Ex: R$0,00"></p>
+            <p>Lucro Líquido: <input type="text" id="lucro" placeholder="Ex: R$0,00"></p>
+            <p>Café da Manhã: <input type="text" id="cafe" placeholder="Ex: 0 pessoas (R$0,00)"></p>
+            <table border="1" id="pagamentos-table">
+                <tr><th>Apartamento</th><th>Pagamento</th><th>Valor</th><th>Status</th></tr>
+                <tr><td>01</td><td><input type="text" class="pag-input pag-forma" data-apto="01"></td><td><input type="text" class="pag-input pag-valor" data-apto="01"></td><td><input type="text" class="pag-input pag-status" data-apto="01"></td></tr>
+                <tr><td>02</td><td><input type="text" class="pag-input pag-forma" data-apto="02"></td><td><input type="text" class="pag-input pag-valor" data-apto="02"></td><td><input type="text" class="pag-input pag-status" data-apto="02"></td></tr>
+                <tr><td>03</td><td><input type="text" class="pag-input pag-forma" data-apto="03"></td><td><input type="text" class="pag-input pag-valor" data-apto="03"></td><td><input type="text" class="pag-input pag-status" data-apto="03"></td></tr>
+                <tr><td>04</td><td><input type="text" class="pag-input pag-forma" data-apto="04"></td><td><input type="text" class="pag-input pag-valor" data-apto="04"></td><td><input type="text" class="pag-input pag-status" data-apto="04"></td></tr>
+                <tr><td>05</td><td><input type="text" class="pag-input pag-forma" data-apto="05"></td><td><input type="text" class="pag-input pag-valor" data-apto="05"></td><td><input type="text" class="pag-input pag-status" data-apto="05"></td></tr>
+                <tr><td>06</td><td><input type="text" class="pag-input pag-forma" data-apto="06"></td><td><input type="text" class="pag-input pag-valor" data-apto="06"></td><td><input type="text" class="pag-input pag-status" data-apto="06"></td></tr>
+                <tr><td>07</td><td><input type="text" class="pag-input pag-forma" data-apto="07"></td><td><input type="text" class="pag-input pag-valor" data-apto="07"></td><td><input type="text" class="pag-input pag-status" data-apto="07"></td></tr>
+                <tr><td>08</td><td><input type="text" class="pag-input pag-forma" data-apto="08"></td><td><input type="text" class="pag-input pag-valor" data-apto="08"></td><td><input type="text" class="pag-input pag-status" data-apto="08"></td></tr>
+                <tr><td>09</td><td><input type="text" class="pag-input pag-forma" data-apto="09"></td><td><input type="text" class="pag-input pag-valor" data-apto="09"></td><td><input type="text" class="pag-input pag-status" data-apto="09"></td></tr>
+                <tr><td>10</td><td><input type="text" class="pag-input pag-forma" data-apto="10"></td><td><input type="text" class="pag-input pag-valor" data-apto="10"></td><td><input type="text" class="pag-input pag-status" data-apto="10"></td></tr>
+                <tr><td>11</td><td><input type="text" class="pag-input pag-forma" data-apto="11"></td><td><input type="text" class="pag-input pag-valor" data-apto="11"></td><td><input type="text" class="pag-input pag-status" data-apto="11"></td></tr>
+                <tr><td>12</td><td><input type="text" class="pag-input pag-forma" data-apto="12"></td><td><input type="text" class="pag-input pag-valor" data-apto="12"></td><td><input type="text" class="pag-input pag-status" data-apto="12"></td></tr>
+                <tr><td>13</td><td><input type="text" class="pag-input pag-forma" data-apto="13"></td><td><input type="text" class="pag-input pag-valor" data-apto="13"></td><td><input type="text" class="pag-input pag-status" data-apto="13"></td></tr>
+                <tr><td>14</td><td><input type="text" class="pag-input pag-forma" data-apto="14"></td><td><input type="text" class="pag-input pag-valor" data-apto="14"></td><td><input type="text" class="pag-input pag-status" data-apto="14"></td></tr>
+                <tr><td>15</td><td><input type="text" class="pag-input pag-forma" data-apto="15"></td><td><input type="text" class="pag-input pag-valor" data-apto="15"></td><td><input type="text" class="pag-input pag-status" data-apto="15"></td></tr>
+                <tr><td>16</td><td><input type="text" class="pag-input pag-forma" data-apto="16"></td><td><input type="text" class="pag-input pag-valor" data-apto="16"></td><td><input type="text" class="pag-input pag-status" data-apto="16"></td></tr>
+                <tr><td>17</td><td><input type="text" class="pag-input pag-forma" data-apto="17"></td><td><input type="text" class="pag-input pag-valor" data-apto="17"></td><td><input type="text" class="pag-input pag-status" data-apto="17"></td></tr>
+                <tr><td>18</td><td><input type="text" class="pag-input pag-forma" data-apto="18"></td><td><input type="text" class="pag-input pag-valor" data-apto="18"></td><td><input type="text" class="pag-input pag-status" data-apto="18"></td></tr>
+            </table>
+        </div>
+        <!-- Direita: Observações -->
+        <div class="section right">
+            <h2>Observações Chave</h2>
+            <textarea id="observacoes" rows="5" placeholder="Observação 1...\nObservação 2..."></textarea>
+            <p>Entradas: <input type="text" id="entradas" placeholder="Listar aptos"></p>
+            <p>Saídas Amanhã: <input type="text" id="saidas" placeholder="Listar aptos"></p>
+        </div>
+    </div>
+    <button onclick="salvarXML()">Salvar em XML</button>
+    <button onclick="gerarPDF()">Gerar e Imprimir PDF</button>
+    <button onclick="salvarGoogleSheets()">Salvar no Google Sheets</button>
+
+    <script>
+        function coletarDados() {
+            const data = document.getElementById('data').value;
+            const relator = document.getElementById('relator').value;
+            const ocupacao = document.getElementById('ocupacao').value;
+            const observacoes = document.getElementById('observacoes').value;
+            const entradas = document.getElementById('entradas').value;
+            const saidas = document.getElementById('saidas').value;
+            const receitas = document.getElementById('receitas').value;
+            const pix = document.getElementById('pix').value;
+            const especie = document.getElementById('especie').value;
+            const despesas = document.getElementById('despesas').value;
+            const lucro = document.getElementById('lucro').value;
+            const cafe = document.getElementById('cafe').value;
+
+            const aptos = {};
+            document.querySelectorAll('.apto-status').forEach(select => {
+                const apto = select.dataset.apto;
+                const status = select.value;
+                const detalhes = document.querySelector(`.apto-detalhes[data-apto="${apto}"]`).value;
+                aptos[apto] = `${status} - ${detalhes}`;
+            });
+
+            const pagamentos = {};
+            document.querySelectorAll('.pag-input').forEach(input => {
+                const apto = input.dataset.apto;
+                if (!pagamentos[apto]) pagamentos[apto] = {};
+                if (input.classList.contains('pag-forma')) pagamentos[apto].forma = input.value;
+                if (input.classList.contains('pag-valor')) pagamentos[apto].valor = input.value;
+                if (input.classList.contains('pag-status')) pagamentos[apto].status = input.value;
+            });
+
+            return { data, relator, ocupacao, aptos, receitas, pix, especie, despesas, lucro, cafe, observacoes, entradas, saidas, pagamentos };
+        }
+
+        function salvarXML() {
+            const dados = coletarDados();
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<report>\n';
+            xml += `  <date>${dados.data}</date>\n`;
+            xml += `  <relator>${dados.relator}</relator>\n`;
+            xml += `  <ocupacao>${dados.ocupacao}</ocupacao>\n`;
+            xml += `  <receitas>${dados.receitas}</receitas>\n`;
+            xml += `  <pix>${dados.pix}</pix>\n`;
+            xml += `  <especie>${dados.especie}</especie>\n`;
+            xml += `  <despesas>${dados.despesas}</despesas>\n`;
+            xml += `  <lucro>${dados.lucro}</lucro>\n`;
+            xml += `  <cafe>${dados.cafe}</cafe>\n`;
+            xml += `  <observacoes>${dados.observacoes.replace(/\n/g, '&#10;')}</observacoes>\n`;
+            xml += `  <entradas>${dados.entradas}</entradas>\n`;
+            xml += `  <saidas>${dados.saidas}</saidas>\n`;
+            xml += '  <aptos>\n';
+            for (const apto in dados.aptos) {
+                xml += `    <apto id="${apto}">${dados.aptos[apto]}</apto>\n`;
+            }
+            xml += '  </aptos>\n';
+            xml += '  <pagamentos>\n';
+            for (const apto in dados.pagamentos) {
+                const pag = dados.pagamentos[apto];
+                xml += `    <pagamento apto="${apto}">\n`;
+                xml += `      <forma>${pag.forma || ''}</forma>\n`;
+                xml += `      <valor>${pag.valor || ''}</valor>\n`;
+                xml += `      <status>${pag.status || ''}</status>\n`;
+                xml += '    </pagamento>\n';
+            }
+            xml += '  </pagamentos>\n';
+            xml += '</report>';
+
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `report_${dados.data}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const dados = coletarDados();
+            let y = 10;
+
+            // Título
+            doc.setFontSize(16);
+            doc.text(`Dashboard Hospedagem - Dezembro 2025`, 10, y);
+            y += 10;
+            doc.text(`Data Atual: ${dados.data} Relator: ${dados.relator} Total Apartamentos: 18 Ocupação Geral: ${dados.ocupacao}`, 10, y);
+            y += 10;
+
+            // Resumo de Status
+            doc.text('Resumo de Status', 10, y);
+            y += 5;
+            doc.text('🟢 Aptos Limpos/Disponíveis: 1 (5%)', 10, y);
+            y += 5;
+            // Adicione lógica para listar disponíveis baseados nos dados
+            doc.text('* Apto 03 (Check-in às 18h)', 10, y); // Exemplo estático; adapte para dinâmico se necessário
+            y += 10;
+
+            doc.text('🟡 Aptos Sujos (em Limpeza): 0 (0%)', 10, y);
+            y += 5;
+            doc.text('* Nenhum reportado', 10, y);
+            y += 10;
+
+            doc.text('🔴 Aptos Ocupados: 13 (72%)', 10, y);
+            y += 5;
+            // Liste ocupados dinamicamente
+            doc.text('* Grupo MRV: Aptos 09, 13, 14, 17, 18', 10, y); y += 5;
+            doc.text('* Grupo PG: Aptos 10, 11', 10, y); y += 5;
+            doc.text('* Outros:', 10, y); y += 5;
+            for (const apto in dados.aptos) {
+                if (dados.aptos[apto].startsWith('Ocupado')) {
+                    doc.text(`  * Apto ${apto}: ${dados.aptos[apto].split(' - ')[1] || ''}`, 10, y);
+                    y += 5;
+                    if (y > 280) { doc.addPage(); y = 10; }
+                }
+            }
+            y += 10;
+
+            doc.text('❓ Aptos Não Reportados: 4 (22%) - Aptos 08, 12, 15, 16 (Assumir disponíveis, mas verificar status)', 10, y);
+            y += 10;
+
+            // Movimentações do Dia
+            doc.text('Movimentações do Dia', 10, y);
+            y += 5;
+            doc.text('✅ Entradas Hoje:', 10, y); y += 5;
+            doc.text(`* ${dados.entradas}`, 10, y); y += 5; // Use o campo entradas para dinâmico
+            y += 5;
+
+            doc.text('☑ Saídas Amanhã (07/12/2025):', 10, y); y += 5;
+            doc.text(`* ${dados.saidas}`, 10, y); y += 10;
+
+            // Financeiro
+            doc.text('Financeiro', 10, y);
+            y += 5;
+            doc.text(`Entradas Recebidas (desde 05/12/2025): ${dados.receitas}`, 10, y); y += 5;
+            doc.text(`* Pix: ${dados.pix}`, 10, y); y += 5;
+            doc.text(`* Espécie: ${dados.especie}`, 10, y); y += 5;
+            doc.text('* Forma de Pagamento Geral: Misturada (Pix, Espécie, Booking)', 10, y); y += 10;
+
+            doc.text(`Café da Manhã: ☕ ${dados.cafe}`, 10, y); y += 10;
+
+            // Observações
+            doc.text('Observações Importantes 🚨', 10, y);
+            y += 5;
+            const obsLines = dados.observacoes.split('\n');
+            obsLines.forEach(line => {
+                doc.text(`* ${line}`, 10, y);
+                y += 5;
+                if (y > 280) { doc.addPage(); y = 10; }
+            });
+
+            doc.save(`relatorio_${dados.data}.pdf`);
+        }
+
+        async function salvarGoogleSheets() {
+            const dados = coletarDados();
+            const scriptUrl = 'COLE_A_URL_DO_SEU_APPS_SCRIPT_AQUI'; // Substitua pela URL do seu web app
+
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                alert('Dados salvos no Google Sheets com sucesso!');
+            } catch (error) {
+                alert('Erro ao salvar: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
+```
